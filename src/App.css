@@ -7,11 +7,45 @@
 }
 
 body {
-  background: linear-gradient(180deg, #b8c6db 0%, #8ec5d6 30%, #c9dfc9 100%);
-  background-size: cover;
-  background-attachment: fixed;
   font-family: 'Poppins', sans-serif;
   min-height: 100vh;
+  transition: background 0.5s ease;
+}
+
+/* ============================================
+   Dynamic Backgrounds
+   ============================================ */
+
+/* Default / Clear Sky */
+body.weather-clear {
+  background: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+}
+
+/* Clouds */
+body.weather-clouds {
+  background: linear-gradient(180deg, #b8c6db 0%, #8ec5d6 30%, #c9dfc9 100%);
+}
+
+/* Rain / Drizzle */
+body.weather-rain {
+  background: linear-gradient(180deg, #4b6cb7 0%, #182848 100%);
+  color: #fff;
+}
+
+/* Snow */
+body.weather-snow {
+  background: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%);
+}
+
+/* Thunderstorm */
+body.weather-thunderstorm {
+  background: linear-gradient(to right, #232526, #414345);
+  color: #fff;
+}
+
+/* Mist / Fog */
+body.weather-mist {
+  background: linear-gradient(to top, #cfd9df 0%, #e2ebf0 100%);
 }
 
 #root {
@@ -32,6 +66,53 @@ body {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   padding: 20px 25px;
   backdrop-filter: blur(10px);
+  transition: all 0.5s ease;
+}
+
+/* Darker Text for lighter backgrounds */
+body.weather-snow .App,
+body.weather-mist .App {
+  background-color: rgba(255, 255, 255, 0.6);
+}
+
+/* Lighter Text for darker backgrounds */
+body.weather-rain .App,
+body.weather-thunderstorm .App {
+  background-color: rgba(0, 0, 0, 0.3);
+  color: #fff;
+}
+
+body.weather-rain .city-name,
+body.weather-rain .date,
+body.weather-rain .temp,
+body.weather-rain .weather-des,
+body.weather-rain .weather-info,
+body.weather-rain .forecast-section h3,
+body.weather-rain .forecast-item,
+body.weather-thunderstorm .city-name,
+body.weather-thunderstorm .date,
+body.weather-thunderstorm .temp,
+body.weather-thunderstorm .weather-des,
+body.weather-thunderstorm .weather-info,
+body.weather-thunderstorm .forecast-section h3,
+body.weather-thunderstorm .forecast-item {
+  color: #fff;
+}
+
+body.weather-rain .forecast-item,
+body.weather-thunderstorm .forecast-item {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+body.weather-rain .temp-deg,
+body.weather-thunderstorm .temp-deg {
+  color: #ddd;
+}
+
+body.weather-rain .temp-deg.active,
+body.weather-thunderstorm .temp-deg.active {
+  color: #fff;
 }
 
 /* ============================================
@@ -140,10 +221,14 @@ body {
    ============================================ */
 
 .error-message {
-  color: #f06789;
-  font-size: 24px;
+  color: #ff6b6b;
+  font-size: 18px;
   font-weight: bold;
   margin: 20px 0;
+  padding: 15px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* ============================================
@@ -166,17 +251,18 @@ body {
   font-weight: 500;
   font-style: oblique;
   color: #1e2432;
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 }
 
 .temp-icon-wrapper {
   display: flex;
   justify-content: center;
+  margin-bottom: 5px;
 }
 
 .temp-icon {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
 }
 
 .temp {
@@ -215,10 +301,10 @@ body {
 
 .weather-des {
   color: #f06789;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 500;
   margin-top: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   text-transform: capitalize;
 }
 
@@ -227,16 +313,15 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 50px;
-  margin-top: 15px;
-  margin-bottom: 20px;
+  gap: 60px;
+  margin-bottom: 30px;
   color: #1e2432;
 }
 
 .col {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
 .col svg {
@@ -251,13 +336,14 @@ body {
 }
 
 .info-value {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
 }
 
 .info-label {
-  font-size: 12px;
+  font-size: 13px;
   color: #666;
+  opacity: 0.8;
 }
 
 /* ============================================
@@ -265,20 +351,22 @@ body {
    ============================================ */
 
 .forecast-section {
-  margin-top: 20px;
+  margin-top: 30px;
 }
 
 .forecast-section h3 {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   color: #1e2432;
-  margin-bottom: 15px;
+  margin-bottom: 20px;
+  text-align: left;
+  padding-left: 5px;
 }
 
 .forecast-container {
   display: flex;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
 }
 
 .day {
@@ -287,32 +375,34 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding: 12px 8px;
-  border-radius: 10px;
+  padding: 15px 10px;
+  border-radius: 12px;
   background-color: #fff;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
-  transition: background-color 0.2s;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .day:hover {
-  background-color: #f0f8ff;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 }
 
 .day-name {
-  font-size: 14px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   color: #1e2432;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
 }
 
 .day-icon {
-  width: 45px;
-  height: 45px;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 5px;
 }
 
 .day-temperature {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 600;
   color: #1e2432;
   margin-top: 5px;
 }
@@ -322,7 +412,7 @@ body {
    ============================================ */
 
 .credit {
-  margin-top: 25px;
+  margin-top: 40px;
   text-align: center;
   font-size: 13px;
   color: #666;
@@ -330,7 +420,7 @@ body {
 
 .credit a {
   color: #f06789;
-  font-weight: 500;
+  font-weight: 600;
   text-decoration: none;
 }
 
@@ -344,43 +434,52 @@ body {
 
 @media screen and (max-width: 600px) {
   .App {
-    padding: 15px;
+    padding: 20px;
   }
 
   .temp {
-    font-size: 48px;
+    font-size: 52px;
   }
 
   .temp-deg,
   .temp-separator {
-    font-size: 22px;
+    font-size: 24px;
   }
 
   .weather-info {
     gap: 30px;
   }
 
+  /* Forecast items stack on very small screens or wrap */
   .forecast-container {
     flex-wrap: wrap;
+    justify-content: center;
   }
 
   .day {
-    flex: 0 0 calc(50% - 5px);
+    flex: 0 0 calc(33.33% - 12px);
     margin-bottom: 10px;
+    min-width: 90px;
   }
 }
 
 @media screen and (max-width: 400px) {
   .temp {
-    font-size: 40px;
+    font-size: 42px;
   }
 
   .city-name {
-    font-size: 18px;
+    font-size: 20px;
   }
 
   .weather-info {
     flex-direction: column;
     gap: 15px;
+    align-items: flex-start;
+    padding-left: 20px;
+  }
+
+  .day {
+    flex: 0 0 calc(50% - 10px);
   }
 }
