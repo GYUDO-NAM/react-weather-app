@@ -1,13 +1,43 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import { Card, Space } from 'antd'
 import Search from 'antd/es/input/Search'
-import { apiData } from './mockdata/api-data'
+import { weatherService } from './services/weatherService'
+import type { CurrentWeather, ForecastData } from './services/weatherService'
 
 function App() {
   const [count, setCount] = useState(0)
+  const [weather, setWeather] = useState<CurrentWeather | null>(null)
+  const [forecast, setForecast] = useState<ForecastData | null>(null)
+
+  // FE-2: 컴포넌트 마운트 시 날씨 데이터 로드
+  useEffect(() => {
+    const loadWeatherData = async () => {
+      console.log('===========================================');
+      console.log('[FE-2] 🚀 Weather Service 시작');
+      console.log('===========================================');
+
+      try {
+        // Current Weather 가져오기
+        const currentWeather = await weatherService.getCurrentWeather('Seoul');
+        setWeather(currentWeather);
+
+        // 5-Day Forecast 가져오기
+        const forecastData = await weatherService.getForecast('Seoul');
+        setForecast(forecastData);
+
+        console.log('===========================================');
+        console.log('[FE-2] 🎉 모든 데이터 로드 완료!');
+        console.log('===========================================');
+      } catch (error) {
+        console.error('[FE-2] ❌ 에러 발생:', error);
+      }
+    };
+
+    loadWeatherData();
+  }, []);
 
   const handleSearch = (value: string) => {
     console.log(value)
@@ -33,7 +63,7 @@ function App() {
             size="large"
             onSearch={handleSearch}
           />
-          <p>Card content{apiData.city} {apiData.country}</p>
+          <p>Card content: {weather?.city} {weather?.country}</p>
           <p>Card content</p>
           <p>Card content</p>
           <div className="flex">
