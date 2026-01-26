@@ -23,29 +23,25 @@ function Search({ onSearch, isLoading }: SearchProps) {
     };
 
     return (
-        <div className="search-container">
-            <div className="search-input-wrapper">
-                <input
-                    type="text"
-                    className="search-input"
-                    placeholder="도시 이름을 입력하세요 (예: Seoul, Tokyo)"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    onKeyPress={handleKeyPress}
-                    disabled={isLoading}
-                />
-                <button
-                    className="search-button"
-                    onClick={handleSearch}
-                    disabled={isLoading || !inputValue.trim()}
-                >
-                    {isLoading ? (
-                        <span className="loading-spinner"></span>
-                    ) : (
-                        <SearchIcon size={20} />
-                    )}
-                </button>
-            </div>
+        <div className="SearchEngine">
+            <input
+                type="text"
+                placeholder="enter city name"
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={handleKeyPress}
+                disabled={isLoading}
+            />
+            <button
+                onClick={handleSearch}
+                disabled={isLoading || !inputValue.trim()}
+            >
+                {isLoading ? (
+                    <span className="loading-spinner"></span>
+                ) : (
+                    <SearchIcon size={20} />
+                )}
+            </button>
         </div>
     );
 }
