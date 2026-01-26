@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { mockCurrentWeather, mockForecast } from '../mockdata/api-data';
+import { mockDB } from '../mockdata/api-data';
 
 // ============================================
 // 타입 정의
@@ -34,16 +34,10 @@ export interface ForecastData {
 // 단위 변환 유틸리티
 // ============================================
 
-/**
- * 켈빈(Kelvin) → 섭씨(Celsius) 변환
- */
 export const kelvinToCelsius = (kelvin: number): number => {
     return Math.round(kelvin - 273.15);
 };
 
-/**
- * 섭씨(Celsius) → 화씨(Fahrenheit) 변환
- */
 export const celsiusToFahrenheit = (celsius: number): number => {
     return Math.round((celsius * 9) / 5 + 32);
 };
@@ -70,21 +64,30 @@ export const weatherService = {
         // Mock 모드
         if (USE_MOCK) {
             console.log('[FE-2] 📦 Mock 데이터 사용 중...');
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 setTimeout(() => {
+                    const searchKey = city.toLowerCase();
+                    const mockData = mockDB[searchKey];
+
+                    if (!mockData) {
+                        // Mock DB에 없는 도시인 경우 404 에러 시뮬레이션
+                        reject({ response: { status: 404 } });
+                        return;
+                    }
+
                     const data: CurrentWeather = {
-                        city: mockCurrentWeather.city,
-                        country: mockCurrentWeather.country,
-                        temp: mockCurrentWeather.temperature.current,
-                        feelsLike: mockCurrentWeather.temperature.feels_like,
-                        humidity: mockCurrentWeather.temperature.humidity,
-                        description: mockCurrentWeather.condition.description,
-                        icon: mockCurrentWeather.condition.icon,
-                        windSpeed: mockCurrentWeather.wind.speed
+                        city: mockData.current.city,
+                        country: mockData.current.country,
+                        temp: mockData.current.temperature.current,
+                        feelsLike: mockData.current.temperature.feels_like,
+                        humidity: mockData.current.temperature.humidity,
+                        description: mockData.current.condition.description,
+                        icon: mockData.current.condition.icon,
+                        windSpeed: mockData.current.wind.speed
                     };
-                    console.log('[FE-2] ✅ Current Weather 로드 완료:', data);
+                    console.log(`[FE-2] ✅ Mock Data Load (${city}):`, data);
                     resolve(data);
-                }, 500);
+                }, 800); // 로딩 느낌을 위한 0.8초 지연
             });
         }
 
@@ -94,7 +97,7 @@ export const weatherService = {
                 params: {
                     q: city,
                     appid: API_KEY,
-                    units: 'metric' // 섭씨로 받기
+                    units: 'metric'
                 }
             });
 
@@ -109,7 +112,6 @@ export const weatherService = {
                 windSpeed: response.data.wind.speed
             };
 
-            console.log('[FE-2] ✅ Current Weather 로드 완료:', data);
             return data;
         } catch (error) {
             console.error('[FE-2] ❌ API 에러:', error);
@@ -121,17 +123,22 @@ export const weatherService = {
      * 5-Day Forecast: 5일 예보 데이터 가져오기
      */
     async getForecast(city: string): Promise<ForecastData> {
-        console.log(`[FE-2] 📅 5-Day Forecast 요청: ${city}`);
-
         // Mock 모드
         if (USE_MOCK) {
-            console.log('[FE-2] 📦 Mock 데이터 사용 중...');
-            return new Promise((resolve) => {
+            return new Promise((resolve, reject) => {
                 setTimeout(() => {
+                    const searchKey = city.toLowerCase();
+                    const mockData = mockDB[searchKey];
+
+                    if (!mockData) {
+                        reject({ response: { status: 404 } });
+                        return;
+                    }
+
                     const data: ForecastData = {
-                        city: mockForecast.city,
-                        country: mockForecast.country,
-                        list: mockForecast.list.map((item) => ({
+                        city: mockData.current.city,
+                        country: mockData.current.country,
+                        list: mockData.forecast.map((item: any) => ({
                             date: item.date,
                             tempMin: item.temp.min,
                             tempMax: item.temp.max,
@@ -139,9 +146,8 @@ export const weatherService = {
                             icon: item.weather.icon
                         }))
                     };
-                    console.log('[FE-2] ✅ 5-Day Forecast 로드 완료:', data);
                     resolve(data);
-                }, 500);
+                }, 800);
             });
         }
 
@@ -155,13 +161,12 @@ export const weatherService = {
                 }
             });
 
-            // 5일치 데이터만 추출 (하루에 하나씩)
             const dailyData = response.data.list.filter((_: unknown, index: number) => index % 8 === 0);
 
             const data: ForecastData = {
                 city: response.data.city.name,
                 country: response.data.city.country,
-                list: dailyData.map((item: { dt_txt: string; main: { temp_min: number; temp_max: number }; weather: { description: string; icon: string }[] }) => ({
+                list: dailyData.map((item: any) => ({
                     date: item.dt_txt.split(' ')[0],
                     tempMin: Math.round(item.main.temp_min),
                     tempMax: Math.round(item.main.temp_max),
@@ -170,10 +175,8 @@ export const weatherService = {
                 }))
             };
 
-            console.log('[FE-2] ✅ 5-Day Forecast 로드 완료:', data);
             return data;
         } catch (error) {
-            console.error('[FE-2] ❌ API 에러:', error);
             throw error;
         }
     }
