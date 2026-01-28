@@ -111,6 +111,7 @@ export const weatherService = {
                 icon: response.data.weather[0].icon,
                 windSpeed: response.data.wind.speed
             };
+            console.log(`[FE-2] 🌤️ Real API Response (${city}):`, data);
 
             return data;
         } catch (error) {
@@ -174,6 +175,7 @@ export const weatherService = {
                     icon: item.weather[0].icon
                 }))
             };
+            console.log(`[FE-2] 📅 Real Forecast Response (${city}):`, data);
 
             return data;
         } catch (error) {

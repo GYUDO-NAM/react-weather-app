@@ -3,6 +3,8 @@ import './App.css'
 import Search from './components/Search'
 import CurrentWeather from './components/CurrentWeather'
 import Forecast from './components/Forecast'
+import Header from './components/Header'
+import Sidebar from './components/Sidebar'
 import { weatherService } from './services/weatherService'
 import type { CurrentWeather as CurrentWeatherType, ForecastData } from './services/weatherService'
 
@@ -40,8 +42,8 @@ function App() {
 
       // 배경 클래스 업데이트 (날씨 설명 기반)
       const newBgClass = getBackgroundClass(currentWeather.description);
+      console.log(`[App] Weather: ${currentWeather.description}, BgClass: ${newBgClass}`);
       setBgClass(newBgClass);
-      document.body.className = newBgClass; // body 클래스 직접 변경
 
       // 5-Day Forecast 가져오기
       const forecastData = await weatherService.getForecast(searchCity);
@@ -65,11 +67,15 @@ function App() {
   // 5. 초기 로드
   useEffect(() => {
     loadWeatherData('Seoul');
-    // Clean up body class on unmount
+  }, []);
+
+  // 6. 배경색 변경 감지 Effect
+  useEffect(() => {
+    document.body.className = bgClass;
     return () => {
       document.body.className = '';
     };
-  }, []);
+  }, [bgClass]);
 
   // 6. 검색 핸들러
   const handleSearch = (searchCity: string) => {
@@ -79,38 +85,47 @@ function App() {
   };
 
   return (
-    <div className="App">
-      {/* Search Component */}
-      <Search onSearch={handleSearch} isLoading={isLoading} />
+    <>
+      <Header />
+      <div className="dashboard-container">
+        <Sidebar onSelectCity={loadWeatherData} currentCity={city} />
 
-      {/* Error Message */}
-      {error && !isLoading && (
-        <div className="error-message">
-          {error}
+        <div className="main-content">
+          <div className="App">
+            {/* Search Component */}
+            <Search onSearch={handleSearch} isLoading={isLoading} />
+
+            {/* Error Message */}
+            {error && !isLoading && (
+              <div className="error-message">
+                {error}
+              </div>
+            )}
+
+            {/* Loading Spinner */}
+            {isLoading && (
+              <div className="loading-message">
+                <div className="loading-spinner-large"></div>
+              </div>
+            )}
+
+            {/* Weather Content (Only show if no error) */}
+            {!isLoading && !error && weather && (
+              <>
+                <CurrentWeather data={weather} />
+                {forecast && <Forecast data={forecast.list} />}
+              </>
+            )}
+
+            {/* Credit Footer */}
+            <div className="credit">
+              Coded by <a href="https://github.com/GYUDO-NAM" target="_blank" rel="noopener noreferrer">Gyudo Nam</a>.
+              Styled inspired by <a href="https://github.com/s-shemmee/React-Weather-App" target="_blank" rel="noopener noreferrer">Shemmee</a>.
+            </div>
+          </div>
         </div>
-      )}
-
-      {/* Loading Spinner */}
-      {isLoading && (
-        <div className="loading-message">
-          <div className="loading-spinner-large"></div>
-        </div>
-      )}
-
-      {/* Weather Content (Only show if no error) */}
-      {!isLoading && !error && weather && (
-        <>
-          <CurrentWeather data={weather} />
-          {forecast && <Forecast data={forecast.list} />}
-        </>
-      )}
-
-      {/* Credit Footer */}
-      <div className="credit">
-        Coded by <a href="https://github.com/GYUDO-NAM" target="_blank" rel="noopener noreferrer">Gyudo Nam</a>.
-        Styled inspired by <a href="https://github.com/s-shemmee/React-Weather-App" target="_blank" rel="noopener noreferrer">Shemmee</a>.
       </div>
-    </div>
+    </>
   );
 }
 
