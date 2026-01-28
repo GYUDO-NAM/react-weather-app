@@ -95,6 +95,7 @@ function App() {
             {/* Search Component */}
             <Search onSearch={handleSearch} isLoading={isLoading} />
 
+
             {/* Error Message */}
             {error && !isLoading && (
               <div className="error-message">
@@ -102,19 +103,19 @@ function App() {
               </div>
             )}
 
-            {/* Loading Spinner */}
+            {/* Loading Overlay */}
             {isLoading && (
-              <div className="loading-message">
+              <div className="loading-overlay">
                 <div className="loading-spinner-large"></div>
               </div>
             )}
 
-            {/* Weather Content (Only show if no error) */}
-            {!isLoading && !error && weather && (
-              <>
+            {/* Weather Content - Keep visible during load with opacity */}
+            {!error && weather && (
+              <div style={{ opacity: isLoading ? 0.5 : 1, transition: 'opacity 0.3s' }}>
                 <CurrentWeather data={weather} />
                 {forecast && <Forecast data={forecast.list} />}
-              </>
+              </div>
             )}
 
             {/* Credit Footer */}
